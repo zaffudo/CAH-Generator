@@ -1,0 +1,56 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1265
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww31800\viewh19080\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs24 \cf0 convert -units PixelsPerInch -size 3288x4488 xc:black -density 1200 CAH/background.png\
+\
+convert -size 250x250 xc:black -set colorspace RGB -units PixelsPerInch -fill white -font ~/HelveticaNeueBold.ttf -pointsize 13 -kerning 1.5 -density 1200 -gravity center -draw 'circle 125,125 125,1' -draw "fill black text 3,-8 '2'" -set colorspace sRGB CAH/circle_2.png\
+\
+convert -size 250x250 xc:black -set colorspace RGB -units PixelsPerInch -fill white -font ~/HelveticaNeueBold.ttf -pointsize 13 -kerning 1.5 -density 1200 -gravity center -draw 'circle 125,125 125,1' -draw "fill black text 3,-8 '3'" -set colorspace sRGB CAH/circle_3.png\
+\
+convert -units PixelsPerInch -background black  -fill white -font ~/HelveticaNeueBold.ttf -gravity east -pointsize 11 -kerning 1.5 -density 1200 -size 2150x caption:'DRAW ' CAH/draw.png\
+\
+convert -units PixelsPerInch -background black  -fill white -font ~/HelveticaNeueBold.ttf -gravity east -pointsize 11 -kerning 1.5 -density 1200 -size 2150x caption:'PICK ' CAH/pick.png\
+\
+convert -units PixelsPerInch -density 1200 -size 2400x50 xc:black CAH/d2p3_vertical_spacer.png\
+\
+convert CAH/draw.png CAH/circle_2.png -gravity center +append CAH/d2p3_row1.png\
+\
+convert CAH/pick.png CAH/circle_3.png -gravity center +append CAH/d2p3_row2.png\
+\
+convert CAH/d2p3_row1.png CAH/d2p3_vertical_spacer.png CAH/d2p3_row2.png -append CAH/d2p3_block.png\
+\
+convert CAH/d2p3_block.png -page +0+311 CAH/logo1200.png -flatten CAH/temp.png\
+\
+convert -units PixelsPerInch -background black  -fill white -font ~/HelveticaNeueBold.ttf -pointsize 5 -kerning 1.5 -density 1200 -size 1250x caption:'Cards Against Humanity' CAH/cah_logo.png\
+\
+convert CAH/temp.png -page +360+410 CAH/cah_logo.png -flatten CAH/d2p3logo.png\
+\
+convert CAH/background.png -page +444+3494 CAH/d2p3logo.png -flatten CAH/d2p3.png\
+\
+\
+convert -units PixelsPerInch -background black  -fill white -font ~/HelveticaNeueBold.ttf -pointsize 14 -kerning 1 -density 300 -size 600x caption:'Make a haiku.' final_haiku_text.png\
+\
+convert CAH/d2p3.png -page 3288x4488+444+444 CAH/haiku.png -flatten CAH/hk_final.png\
+\
+convert -units PixelsPerInch -fill white -font ~/HelveticaNeueBold.ttf -pointsize 14 -kerning 1.5 -density 1200 -size 2400x279 canvas:black -stroke white -strokewidth 5 -draw "line   5,225 2395,225" CAH/full_line.png\
+\
+convert CAH/backgroundb.png -page +444+3805 CAH/logo1200b.png -page +804+3904 CAH/cah_logo.png -flatten CAH/black.png\
+\
+convert -units PixelsPerInch -background black -fill white -font ~/HelveticaNeueBold.ttf -pointsize 31 -kerning -.5 -interline-spacing -150 -density 1200 -size 3000x4000 caption:'Cards Against Humanity' -trim CAH/cah_backb.png\
+\
+\
+\
+convert CAH/Templates/mechanic-p2.png -page +444+444 -units PixelsPerInch -background black -fill white -font ~/HelveticaNeueBold.ttf -pointsize 15 -kerning -1 -density 1200 -size 2650x caption:"Instead of coal, Santa now gives the bad children ___________________." -flatten text_test.png\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+\cf0 convert CAH/Templates/mechanic-p2.png -units PixelsPerInch -density 1200 -draw "rotate 15 image over 1611,3568 0,0 'CAH/snowflake.png'" version_test.png\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+convert CAH/Templates/mechanic-p2.png -units PixelsPerInch -density 1200 -draw "rotate 15 image over 1625,3568 0,0 'CAH/alien.png'" version_test.png\
+\
+convert CAH/Templates/front-white.png -units PixelsPerInch -font ~/HelveticaNeueBold.ttf -pointsize 6 -density 1200 -draw "rotate 15 text 1640,3665 \'911\'92\'94 v1-front-white.png\
+\
+}

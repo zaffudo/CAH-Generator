@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Cards Against Humanity - Card Generator</title>
+        <meta name="description" content="Generate your own, full size, Cards Against Humanity cards.">
+        <meta name="viewport" content="width=device-width">
+
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <style>
+            body {
+                padding-bottom: 20px;
+			}
+
+			#disclaimer {
+				font-size: x-small;
+			}
+
+			#card {
+				background: #000;
+				border-radius: 15px;
+				box-shadow: 0px 0px 2px 1px #666;
+				color: #fff;
+				font: 28pt arial, helvetica, sans-serif;
+				line-height: 27pt;
+				height: 350px;
+				letter-spacing: 1px;
+				margin: 20px 0 0 0;
+				padding: 20px;
+				width: 250px;
+			}
+
+			#card p {
+				font-size: 12pt;
+				line-height: 14pt;
+				margin: 25px 0 0 0;
+				text-indent: 0;
+			}
+
+			#generator {
+				padding-top: 40px;
+			}
+
+			#color-picker {
+				padding-left: 10px;
+			}
+
+			.modal-body .col-md-4 {
+				margin-top: 6px;
+			}
+
+			.tips li {
+				margin-top: 6px;
+			}
+
+			.instructions {
+				padding-left: 20px;
+			}
+
+			#icon {
+			    width: 80%;
+			}
+
+        </style>
+        <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="css/main.css">
+
+        <script src="js/vendor/modernizr-2.6.2.min.js"></script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
+
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-3">
+			  <div id="card">
+					Cards<br/>
+					Against<br/>
+					Humanity<br/>
+					<p>Custom Card Generator</p>
+			  </div>
+		</div>
+		<div class="col-lg-6">
+			<form id="generator" role="form">
+<!--			<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>My apologies!</strong> This turned out to be more popular than I thought - resulting in my host putting some restrictions on my account. So for the moment I've had to disable the generator. I'm working to rearchitect the backend to resolve the issue. Sorry for the inconvenience.</div> -->
+				<input type="hidden" name="batch-id" id="batch-id" value="">
+				<div class="form-group">
+					<label for="card-text">Card Text</label>
+					<textarea class="form-control" name="card-text" id="card-text" rows="13"></textarea>
+				</div>
+			<div class="row">
+				<div class="col-lg-4">
+					<div id="color-picker">
+						<label>Card Color</label>
+						<div class="radio">
+							<label>
+								<input type="radio" name="card-color" id="card-color-white" value="white" checked>
+								White
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" name="card-color" id="card-color-black" value="black">
+								Black
+							</label>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-4">
+					<label>Expansion Icon</label>
+						<select class="form-control input-sm" name="icon" id="icon">
+							<option value="none">None</option>
+							<option value="alien">Reddit Alien</option>
+							<option value="maple">Maple Leaf</option>
+							<option value="pax">PAX Controller</option>
+							<option value="snow">Snowflake</option>
+							<option value="ferengi">Ferengi Alliance</option>
+							<option value="reject">Thumbs Down</option>
+							<option value="HOC">Reversed US Flag</option>
+							<option value="hat">Santa Hat</option>
+							<option value="box">Box</option>
+						</select>
+				</div>
+				<div class="col-lg-4">
+					<label>Mechanic</label>
+						<div class="radio">
+							<label>
+								<input type="radio" name="mechanic" id="mechanic-none" value="none" checked disabled>
+								None
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" name="mechanic" id="mechanic-p2" value="p2" disabled>
+								Pick 2
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" name="mechanic" id="mechanic-d2p3" value="d2p3" disabled>
+								Draw 2, Pick 3
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" name="mechanic" id="mechanic-gear" value="gear" disabled>
+								Gears
+							</label>
+						</div>
+				</div>
+			</div>
+			<button type="button" data-loading-text="Generating..." class="btn btn-default pull-right" id="generate-button">
+				Generate Cards
+			</button>
+			</form>
+        </div>
+        <div class="col-lg-3">
+			<h2>Instructions</h2>
+			<p class="instructions">Enter the text you want on a card, then click the button. This isn't exactly rocket science.</p>
+
+			<h2>Tips</h2>
+			<ul class="tips">
+				<li>You can create up to 30 cards at a time (One card per line).</li>
+				<li>Use a single _ to create a full underlined line.</li>
+				<li>Consecutive _'s can be used to customize underline length.</li>
+				<li>Use double quotes to quote things. Single quotes are turned into apostrophes.</li>
+				<li>You can have a newline appear in your card text by using \n.</li>
+				<li>Be patient - it takes a while for the cards to generate.</li>
+			</ul>
+        </div>
+      </div>
+
+	<hr>
+
+		<div class="row">
+			<div class="col-lg-4">
+				<h2>Printing</h2>
+				<p>
+					The images produced are 1200 dpi, and inteded for printing on actual cards from a professional printer. Extra margin is already included to account for bleed.
+				</p>
+				<p>
+					In my experience the poker size 310 GSM, linen finish cards at <a href="http://www.shareasale.com/m-pr.cfm?merchantID=46705&userID=898804&productID=513636404" target="_blank">PrintStudio</a> are the closest match to the actual CAH cards - just ever so slightly larger. I've seen many others using <a href="http://www.artscow.com/?Ref=1846324" target="_blank">Artscow</a> but I felt the cards were to flat/matte for my liking.
+				</p>
+			</div>
+			<div class="col-lg-3 col-lg-offset-1">
+				<h2>Card Backs</h2>
+				<p>Since the card backs never change, they aren't included with the generated cards. You can download them from the links below.</p>
+				<ul class="tips">
+					<li><a href="img/back-white.png" target="_blank">White Card Back</a></li>
+					<li><a href="img/back-black.png" target="_blank">Black Card Back</a></li>
+				</ul>
+			</div>
+			<div class="col-lg-3 col-lg-offset-1">
+				<h2>Card Ideas</h2>
+				<p>No terrible ideas coming to mind? Try looking for some inspiration here:</p>
+				<ul class="tips">
+					<li><a href="http://boardgamegeek.com/forum/383041/cards-against-humanity/general">BoardGameGeek</a></li>
+					<li><a href="http://www.reddit.com/r/cardsagainsthumanity/">r/cardsgainsthumanity</a></li>
+					<li><a href="http://www.reddit.com/r/CAHideas">r/CAHideas</a></li>
+					<li><a href="http://www.reddit.com/r/upvoteagainsthumanity">r/upvoteagainsthumanity</a></li>
+				</ul>
+			</div>
+		</div>
+
+
+      <hr>
+
+      <footer>
+			<div class="row">
+				<div class="col-lg-3 col-lg-offset-9">
+					<div id="disclaimer"><p>Cards Against Humanity is a trademark of Cards Against Humanity, LLC. and is distributed under the <a rel="license" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/2.0/80x15.png"></a> license.</p><p>Cards Against Humanity is not affiliated with this site in any way (in fact, I'd be shocked if they know it exists).</p></div>
+				</div>
+			</div>
+      </footer>
+  </div> <!-- /container -->
+<!-- Modal -->
+<div class="modal fade" id="batchModal" tabindex="-1" role="dialog" aria-labelledby="batchModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="batchModalLabel">Your Shitty Cards</h4>
+      </div>
+      <div class="modal-body">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-default" id="zipDownload" disabled>Download Zip</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+
+
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
+
+        <script src="js/vendor/bootstrap.min.js"></script>
+
+        <script src="js/vendor/underscore-min.js"></script>
+        <script src="js/plugins.js"></script>
+        <script src="js/main.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src='//www.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+
+			$( document ).ready(function() {
+				$('input:radio[name=card-color]').change(function(e){
+					if($(this).val() === 'black') {
+						$('input:radio[name=mechanic]').prop('disabled', false);
+					} else {
+						$('input:radio[name=mechanic]').prop('disabled', true);
+					}
+				});
+
+				$('#generator').submit(function(e) {
+					var form = $(this), 
+						button = $('#generate-button'),
+						batch = 'submit_' + (Date.now()*Math.random()*100000).toString(36),
+						dl_button = $('#zipDownload'),
+						text = $('#card-text'),
+						batch_count;
+					
+					$(".alert").alert('close')
+
+					dl_button.unbind('click');
+					dl_button.prop('disabled', true);
+
+					$('#batch-id').attr('value', batch);
+					text.val(_.without(text.val().split('\n'), "").join('\n').replace(/([^_])_([^_])|([^_])_([^_]?)$|^([^_]?)_([^_])/g, '\$1___________________\$2').replace(/"(.+?)"/g, "\\x{201C}\$1\\x{201D}").replace(/'/g, "\\x{2019}"));
+					batch_count = text.val().split('\n').length;
+
+					if (batch_count < 31 && text.val() !== "") {
+						button.button('loading');
+						$.ajax({
+							type: 'POST',
+							url: 'http://mywastedlife.com/CAH/generator.php',
+							data: form.serialize()
+						}).done(function(){
+							dl_button.click(function(){
+								window.location = 'http://mywastedlife.com/CAH/files/' + batch + '/' + batch + '.zip';
+							});
+
+							dl_button.prop('disabled', false);
+							button.button('reset')
+						
+						}).fail(function(){alert('An Error Occurred, you should refresh the page.')})
+
+						$('#batchModal').modal('show');
+						view_batch(batch, batch_count);
+					} else {
+						$('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Oh Snap!</strong> Check yourself, before you wreck yourself.</div>').prependTo(form);
+					}
+
+					
+					text.val(_.without(text.val().split('\n'), "").join('\n').replace(/\\x{201C}|\\x{201D}/g, '"').replace(/\\x{2019\}/g, "'"));
+
+					e.preventDefault();
+				});
+
+				$('#generate-button').click(function(e){$('#generator').submit();});
+			});
+			
+			var view_batch = function(batch, batch_count) {
+				var modalBody = $('#batchModal .modal-body').empty(),
+					row = $('<div>').attr("class", "row").appendTo(modalBody),
+					i = 0,
+					spinner = new Image(),
+					col,
+					max_attempts = 10,
+					loadImages = function(attempt){
+						var img = new Image(),
+						    imgURL = 'http://mywastedlife.com/CAH/files/' + batch + '/' + batch  + '_' + i + '.png';
+						    
+						    if ($(col).html() != $(spinner).get(0).outerHTML) {
+							col = $('<div>').attr({
+								"class": "col-md-4",
+								style: "text-align: center;"
+							}).appendTo(row);
+
+							$(col).html($(spinner));
+						    }
+
+						$(img).load(function(){
+							$(col).html($(this));
+							i++;
+							if (i < batch_count) {
+							    loadImages(0);
+							}
+						}).attr({
+							src: imgURL,
+							width: '100%',
+							style: 'border: 1px solid #888; border-radius: 15px; box-shadow: 1px 1px 1px 1px #999'
+						}).error(function(){
+							attempt++;
+							if (attempt < max_attempts) {
+							    setTimeout(function(){loadImages(attempt)}, 5000);
+							}
+						});
+					}
+
+				$(spinner).attr({
+					src: "http://mywastedlife.com/CAH/img/preloader_transparent.gif"
+				});
+
+				loadImages(0);
+					
+			}
+			
+        </script>
+    </body>
+</html>
