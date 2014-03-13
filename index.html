@@ -282,7 +282,8 @@
 					$('#batch-id').attr('value', batch);
 					text.val(_.without(text.val().split('\n'), "").join('\n').replace(/([^_])_([^_])|([^_])_([^_]?)$|^([^_]?)_([^_])/g, '\$1___________________\$2').replace(/"(.+?)"/g, "\\x{201C}\$1\\x{201D}").replace(/'/g, "\\x{2019}"));
 					batch_count = text.val().split('\n').length;
-
+					
+					//Cards entered are valid//
 					if (batch_count < 31 && text.val() !== "") {
 						button.button('loading');
 						$.ajax({
@@ -301,10 +302,15 @@
 
 						$('#batchModal').modal('show');
 						view_batch(batch, batch_count);
-					} else {
-						$('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Oh Snap!</strong> Check yourself, before you wreck yourself.</div>').prependTo(form);
+					} 
+					//No cards were entered//
+					if (text.val() == "") {
+						$('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Oh Snap!</strong> You didn\'t enter in any cards to generate.</div>').prependTo(form);
 					}
-
+					//Too many cards were entered//
+					if (batch_count >= 31) {
+						$('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Oh Snap!</strong> The generator can\'t make more than 30 cards at once.</div>').prependTo(form);
+					}
 					
 					text.val(_.without(text.val().split('\n'), "").join('\n').replace(/\\x{201C}|\\x{201D}/g, '"').replace(/\\x{2019\}/g, "'"));
 
