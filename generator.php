@@ -17,8 +17,8 @@ if ($_POST['card-color'] == 'black') {
 }
 
 switch ($_POST['icon']) {
-	case "alien":
-		$icon = 'internet-';
+	case "reddit":
+		$icon = 'reddit-';
 		break;
 	case "maple":
 		$icon = 'canada-';
