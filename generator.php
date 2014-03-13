@@ -63,6 +63,7 @@ if ($card_color == 'white') {
 	$mechanic = '';
 }
 
+// Mechanic cards with expansion icons have not been created yet
 if ($mechanic == '-mechanic-gears') {
 	$icon = '';
 }
@@ -82,7 +83,7 @@ if ($batch != '' && $card_count < 31) {
 		$text = str_replace ('\\\\x\\{2019\\}', '\\x{2019}', $text);
 		$text = str_replace ('\\\\n', '\\n', $text);
 		
-		//Replaces formatted quotations and apostrophes used by Microsoft Word//
+		//Replaces formatted quotations and apostrophes used by Microsoft Word
 		$text = str_replace ('\“', '\"', $text);
 		$text = str_replace ('\”', '\"', $text);
 		$text = str_replace ('\’', '\'', $text);
