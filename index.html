@@ -117,7 +117,7 @@
 					<label>Expansion Icon</label>
 						<select class="form-control input-sm" name="icon" id="icon">
 							<option value="none">None</option>
-							<option value="alien">Reddit Alien</option>
+							<option value="reddit">Reddit Alien</option>
 							<option value="maple">Maple Leaf</option>
 							<option value="pax">PAX Controller</option>
 							<option value="snow">Snowflake</option>
@@ -183,7 +183,7 @@
 			<div class="col-lg-4">
 				<h2>Printing</h2>
 				<p>
-					The images produced are 1200 dpi, and inteded for printing on actual cards from a professional printer. Extra margin is already included to account for bleed.
+					The images produced are 1200 dpi, and intended for printing on actual cards from a professional printer. Extra margin is already included to account for bleed.
 				</p>
 				<p>
 					In my experience the poker size 310 GSM, linen finish cards at <a href="http://www.shareasale.com/m-pr.cfm?merchantID=46705&userID=898804&productID=513636404" target="_blank">PrintStudio</a> are the closest match to the actual CAH cards - just ever so slightly larger. I've seen many others using <a href="http://www.artscow.com/?Ref=1846324" target="_blank">Artscow</a> but I felt the cards were to flat/matte for my liking.
@@ -282,7 +282,8 @@
 					$('#batch-id').attr('value', batch);
 					text.val(_.without(text.val().split('\n'), "").join('\n').replace(/([^_])_([^_])|([^_])_([^_]?)$|^([^_]?)_([^_])/g, '\$1___________________\$2').replace(/"(.+?)"/g, "\\x{201C}\$1\\x{201D}").replace(/'/g, "\\x{2019}"));
 					batch_count = text.val().split('\n').length;
-
+					
+					//Cards entered are valid//
 					if (batch_count < 31 && text.val() !== "") {
 						button.button('loading');
 						$.ajax({
@@ -301,10 +302,15 @@
 
 						$('#batchModal').modal('show');
 						view_batch(batch, batch_count);
-					} else {
-						$('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Oh Snap!</strong> Check yourself, before you wreck yourself.</div>').prependTo(form);
+					} 
+					//No cards were entered//
+					if (text.val() == "") {
+						$('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Oh Snap!</strong> You didn\'t enter in any cards to generate.</div>').prependTo(form);
 					}
-
+					//Too many cards were entered//
+					if (batch_count >= 31) {
+						$('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Oh Snap!</strong> The generator can\'t make more than 30 cards at once.</div>').prependTo(form);
+					}
 					
 					text.val(_.without(text.val().split('\n'), "").join('\n').replace(/\\x{201C}|\\x{201D}/g, '"').replace(/\\x{2019\}/g, "'"));
 
@@ -353,7 +359,7 @@
 					}
 
 				$(spinner).attr({
-					src: "http://mywastedlife.com/CAH/img/preloader_transparent.gif"
+					src: "img/preloader_transparent.gif"
 				});
 
 				loadImages(0);

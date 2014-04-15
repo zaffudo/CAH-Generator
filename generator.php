@@ -17,8 +17,8 @@ if ($_POST['card-color'] == 'black') {
 }
 
 switch ($_POST['icon']) {
-	case "alien":
-		$icon = 'internet-';
+	case "reddit":
+		$icon = 'reddit-';
 		break;
 	case "maple":
 		$icon = 'canada-';
@@ -63,6 +63,7 @@ if ($card_color == 'white') {
 	$mechanic = '';
 }
 
+// Mechanic cards with expansion icons have not been created yet
 if ($mechanic == '-mechanic-gears') {
 	$icon = '';
 }
@@ -81,6 +82,12 @@ if ($batch != '' && $card_count < 31) {
 		$text = str_replace ('\\\\x\\{201D\\}', '\\x{201D}', $text);
 		$text = str_replace ('\\\\x\\{2019\\}', '\\x{2019}', $text);
 		$text = str_replace ('\\\\n', '\\n', $text);
+		
+		//Replaces formatted quotations and apostrophes used by Microsoft Word
+		$text = str_replace ('\“', '\"', $text);
+		$text = str_replace ('\”', '\"', $text);
+		$text = str_replace ('\’', '\'', $text);
+		
 
 		exec('perl -e \'binmode(STDOUT, ":utf8"); print "' . $text . '\n";\' | tee -a ~/CAH/card_log.txt | convert ~/CAH/img/' . $card_front . ' -page +444+444 -units PixelsPerInch -background ' . $card_color . ' -fill ' . $fill . ' -font ~/CAH/fonts/HelveticaNeueBold.ttf -pointsize 15 -kerning -1 -density 1200 -size 2450x caption:@- -flatten ' . $path . '/temp.png; mv ' . $path . '/temp.png ' . $path . '/' . $batch . '_' . $i . '.png');
 	}
