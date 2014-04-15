@@ -1,7 +1,7 @@
 {\rtf1\ansi\ansicpg1252\cocoartf1265
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
-\margl1440\margr1440\vieww31800\viewh19080\viewkind0
+\margl1440\margr1440\vieww31080\viewh18420\viewkind0
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
 
 \f0\fs24 \cf0 convert -units PixelsPerInch -size 3288x4488 xc:black -density 1200 CAH/background.png\
@@ -53,4 +53,6 @@ convert CAH/Templates/mechanic-p2.png -units PixelsPerInch -density 1200 -draw "
 \
 convert CAH/Templates/front-white.png -units PixelsPerInch -font ~/HelveticaNeueBold.ttf -pointsize 6 -density 1200 -draw "rotate 15 text 1640,3665 \'911\'92\'94 v1-front-white.png\
 \
-}
+\'97\'97\
+\
+convert img/black-mechanic-p2.png -units PixelsPerInch -density 1200 -draw "rotate 17 image over 1719,3492 0,0 '../Assets/tardis.png'" version_test.png}
