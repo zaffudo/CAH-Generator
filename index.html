@@ -29,7 +29,7 @@
 				line-height: 27pt;
 				height: 350px;
 				letter-spacing: 1px;
-				margin: 20px 0 0 0;
+				margin: 20px 0 40px 0;
 				padding: 20px;
 				width: 250px;
 			}
@@ -126,6 +126,10 @@
 							<option value="HOC">Reversed US Flag</option>
 							<option value="hat">Santa Hat</option>
 							<option value="box">Box</option>
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
 						</select>
 				</div>
 				<div class="col-lg-4">
@@ -180,16 +184,16 @@
 	<hr>
 
 		<div class="row">
-			<div class="col-lg-4">
+			<div class="col-lg-3">
 				<h2>Printing</h2>
 				<p>
 					The images produced are 1200 dpi, and intended for printing on actual cards from a professional printer. Extra margin is already included to account for bleed.
 				</p>
 				<p>
-					In my experience the poker size 310 GSM, linen finish cards at <a href="http://www.printerstudio.com/personalized/63x88_custom_size_blank_playing_cards.html" target="_blank">Printer Studio</a> are the closest match to the actual CAH cards - just ever so slightly larger. I've seen many others using <a href="http://www.artscow.com/photo-gifts/playing-cards/multi-purpose-cards-rectangle-394" target="_blank">Artscow</a> but I felt the cards were to flat/matte for my liking.
+					In my experience the 63 x 88mm, 310 GSM linen finish cards at <a href="http://www.printerstudio.com/personalized/63x88_custom_size_blank_playing_cards.html" target="_blank">PrintStudio</a> are the closest match to the CAH cards. 
 				</p>
 			</div>
-			<div class="col-lg-3 col-lg-offset-1">
+			<div class="col-lg-3">
 				<h2>Card Backs</h2>
 				<p>Since the card backs never change, they aren't included with the generated cards. You can download them from the links below.</p>
 				<ul class="tips">
@@ -197,7 +201,7 @@
 					<li><a href="img/back-black.png" target="_blank">Black Card Back</a></li>
 				</ul>
 			</div>
-			<div class="col-lg-3 col-lg-offset-1">
+			<div class="col-lg-3">
 				<h2>Card Ideas</h2>
 				<p>No terrible ideas coming to mind? Try looking for some inspiration here:</p>
 				<ul class="tips">
@@ -207,6 +211,14 @@
 					<li><a href="http://www.reddit.com/r/upvoteagainsthumanity">r/upvoteagainsthumanity</a></li>
 				</ul>
 			</div>
+			<div class="col-lg-3">
+			    <h2>Common Sets</h2>
+			    <p>Save yourself some time and grab these commonly generated sets without waiting:</p> 
+			    <ul class="tips"> 
+				<li><a href="img/sets/HOC.zip">House of Cards</a></li> 
+			    </ul>
+			</div>
+
 		</div>
 
 
@@ -214,7 +226,10 @@
 
       <footer>
 			<div class="row">
-				<div class="col-lg-3 col-lg-offset-9">
+				<div class="col-lg-3">
+				    <a href="https://github.com/zaffudo"><img src="img/GitHub-Mark-32px.png" width="32" height="32" alt="Octocat"></a> Check <a href="https://github.com/zaffudo/CAH-Generator">this project</a> out on Github 
+				</div>
+				<div class="col-lg-3 col-lg-offset-6">
 					<div id="disclaimer"><p>Cards Against Humanity is a trademark of Cards Against Humanity, LLC. and is distributed under the <a rel="license" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/2.0/80x15.png"></a> license.</p><p>Cards Against Humanity is not affiliated with this site in any way (in fact, I'd be shocked if they know it exists).</p></div>
 				</div>
 			</div>
@@ -288,11 +303,11 @@
 						button.button('loading');
 						$.ajax({
 							type: 'POST',
-							url: 'http://mywastedlife.com/CAH/generator.php',
+							url: 'generator.php',
 							data: form.serialize()
 						}).done(function(){
 							dl_button.click(function(){
-								window.location = 'http://mywastedlife.com/CAH/files/' + batch + '/' + batch + '.zip';
+								window.location = 'files/' + batch + '/' + batch + '.zip';
 							});
 
 							dl_button.prop('disabled', false);
@@ -305,11 +320,11 @@
 					} else {
 						// No cards were entered
 						if (text.val() == "") {
-							$('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Oh Snap!</strong> You didn\'t enter in any cards to generate.</div>').prependTo(form);
+							$('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Oh Snap!</strong> You didn\'t enter in any cards to generate, stupid.</div>').prependTo(form);
 						}
 						// Too many cards were entered
 						if (batch_count >= 31) {
-							$('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Oh Snap!</strong> The generator can\'t make more than 30 cards at once.</div>').prependTo(form);
+							$('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Oh Snap!</strong> The generator can\'t make more than 30 cards at once. Learn to read.</div>').prependTo(form);
 						}
 					}
 					
@@ -330,7 +345,7 @@
 					max_attempts = 10,
 					loadImages = function(attempt){
 						var img = new Image(),
-						    imgURL = 'http://mywastedlife.com/CAH/files/' + batch + '/' + batch  + '_' + i + '.png';
+						    imgURL = 'files/' + batch + '/' + batch  + '_' + i + '.png';
 						    
 						    if ($(col).html() != $(spinner).get(0).outerHTML) {
 							col = $('<div>').attr({

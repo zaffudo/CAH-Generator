@@ -1,6 +1,14 @@
 <?php
 setlocale(LC_CTYPE, "UTF8", "en_US.utf8");
 
+// Quick and dirty way to run on the command line for testing
+// Example: php generator.php 'batch-id=submit_d6bsd1asidal120&card-text=test&card-color=white&icon=none'
+//
+if (!isset($_SERVER["HTTP_HOST"])) {
+    parse_str($argv[1], $_GET);
+    parse_str($argv[1], $_POST);
+}
+
 $card_color = 'white';
 $fill = 'black';
 $icon = '';
@@ -8,7 +16,8 @@ $mechanic = '';
 $card_text = explode("\n", $_POST['card-text']);
 $card_count = count($card_text);
 $batch = escapeshellcmd($_POST['batch-id']);
-$path = "~/CAH/files/$batch";
+$cwd = getcwd();
+$path = "$cwd/files/$batch";
 
 if ($_POST['card-color'] == 'black') {
 	$card_color = 'black';
@@ -42,6 +51,18 @@ switch ($_POST['icon']) {
 		break;
 	case "hat":
 		$icon = 'hat-';
+		break;
+	case "1":
+		$icon = 'v1-';
+		break;
+	case "2":
+		$icon = 'v2-';
+		break;
+	case "3":
+		$icon = 'v3-';
+		break;
+	case "4":
+		$icon = 'v4-';
 		break;
 }
 
@@ -88,7 +109,7 @@ if ($batch != '' && $card_count < 31) {
 		$text = str_replace ('\\\\x\\{2019\\}', '\\x{2019}', $text);
 		$text = str_replace ('\\\\n', '\\n', $text);
 		
-		exec('perl -e \'use utf8; binmode(STDOUT, ":utf8"); print "' . $text . '\n";\' | tee -a ~/CAH/card_log.txt | convert ~/CAH/img/' . $card_front . ' -page +444+444 -units PixelsPerInch -background ' . $card_color . ' -fill ' . $fill . ' -font ~/CAH/fonts/HelveticaNeueBold.ttf -pointsize 15 -kerning -1 -density 1200 -size 2450x caption:@- -flatten ' . $path . '/temp.png; mv ' . $path . '/temp.png ' . $path . '/' . $batch . '_' . $i . '.png');
+		exec('perl -e \'use utf8; binmode(STDOUT, ":utf8"); print "' . $text . '\n";\' | tee -a ' . $cwd . '/card_log.txt | convert ' . $cwd . '/img/' . $card_front . ' -page +444+444 -units PixelsPerInch -background ' . $card_color . ' -fill ' . $fill . ' -font ' . $cwd . '/fonts/HelveticaNeueBold.ttf -pointsize 15 -kerning -1 -density 1200 -size 2450x caption:@- -flatten ' . $path . '/temp.png; mv ' . $path . '/temp.png ' . $path . '/' . $batch . '_' . $i . '.png');
 	}
 
 	exec("cd $path; zip $batch.zip *.png");
