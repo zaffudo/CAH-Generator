@@ -65,6 +65,21 @@
 			    width: 80%;
 			}
 
+			#customIcon {
+			    width: 0.1px;
+			    height: 0.1px;
+			    opacity: 0;
+			    overflow: hidden;
+			    position: absolute;
+			    z-index: -1;
+			    
+			}
+			
+			#customIconLabel {
+			    margin-top: 20px;
+			    visibility: hidden;
+			}
+
         </style>
         <link rel="stylesheet" href="css/bootstrap-theme.min.css">
         <link rel="stylesheet" href="css/main.css">
@@ -130,7 +145,15 @@
 							<option value="2">2</option>
 							<option value="3">3</option>
 							<option value="4">4</option>
-						</select>
+							<option value="custom">Custom Icon</option>
+						    </select>
+					<div>
+					    <label for="customIcon" id="customIconLabel" class="btn btn-default">
+						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17"><path d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"/></svg>
+						Choose a file&hellip;
+					    </label>
+					    <input type="file" name="customIcon" id="customIcon">
+					</div>
 				</div>
 				<div class="col-lg-4">
 					<label>Mechanic</label>
@@ -281,6 +304,16 @@
 					}
 				});
 
+				$('#icon').change(function(e){
+					if($(this).val() === 'custom') {
+						console.log('guh');
+						$('#customIconLabel').css('visibility', 'visible');
+					} else {
+						console.log('noguh');
+						$('#customIconLabel').css('visibility', 'hidden');
+					}
+				});
+
 				$('#generator').submit(function(e) {
 					var form = $(this), 
 						button = $('#generate-button'),
@@ -304,7 +337,10 @@
 						$.ajax({
 							type: 'POST',
 							url: 'generator.php',
-							data: form.serialize()
+							data: new FormData(document.forms.generator),
+							cache: false,
+							contentType: false,
+							processData: false
 						}).done(function(){
 							dl_button.click(function(){
 								window.location = 'files/' + batch + '/' + batch + '.zip';

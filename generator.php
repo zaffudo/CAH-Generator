@@ -18,6 +18,7 @@ $card_count = count($card_text);
 $batch = escapeshellcmd($_POST['batch-id']);
 $cwd = getcwd();
 $path = "$cwd/files/$batch";
+$coord = '1718,3494';
 
 if ($_POST['card-color'] == 'black') {
 	$card_color = 'black';
@@ -64,6 +65,9 @@ switch ($_POST['icon']) {
 	case "4":
 		$icon = 'v4-';
 		break;
+	case "custom":
+		$icon = 'custom-';
+		break;
 }
 
 switch ($_POST['mechanic']) {
@@ -83,17 +87,33 @@ if ($card_color == 'white') {
 	$mechanic = '';
 }
 
+
 // Mechanic cards with expansion icons have not been created yet
 if ($mechanic == '-mechanic-gears') {
 	$icon = '';
 }
 
-$card_back = "back-$card_color.png";
-$card_front = "$icon$card_color$mechanic.png";
+$card_front_path = $cwd .'/img/';
+$card_front = "$card_color$mechanic.png";
 
 
 if ($batch != '' && $card_count < 31) {
 	mkdir($path);
+	
+	if ($icon == 'custom-' && getimagesize($_FILES["customIcon"]["tmp_name"]) && move_uploaded_file($_FILES["customIcon"]["tmp_name"], $path . '/custom_icon_raw')) {
+
+	    // The White and Black cards aren't pixel perfect - the 'three card logo' in the bottom left corner is in a slightly different spot on each 
+	    // Thus to get the custom icon to line up as best as possible, we need a slightly different set of coordinates
+	    if ($card_color == 'black') {
+		    $coord = '1722,3495';
+	    }
+
+	    exec('convert ' . $path . '/custom_icon_raw -resize 150x150\! ' . $path . '/custom_icon');
+	    exec('convert ' . $card_front_path . $card_front . ' -units PixelsPerInch -density 1200 -draw "rotate 17 image over ' . $coord . ' 0,0 \'' . $path . '/custom_icon\'" ' . $path . '/' . $icon . $card_front);
+	    $card_front_path = $path . '/';
+	}
+
+	$card_front = $icon . $card_front;
 
 	foreach ($card_text as $i => $text) {
 
@@ -109,7 +129,7 @@ if ($batch != '' && $card_count < 31) {
 		$text = str_replace ('\\\\x\\{2019\\}', '\\x{2019}', $text);
 		$text = str_replace ('\\\\n', '\\n', $text);
 		
-		exec('perl -e \'use utf8; binmode(STDOUT, ":utf8"); print "' . $text . '\n";\' | tee -a ' . $cwd . '/card_log.txt | convert ' . $cwd . '/img/' . $card_front . ' -page +444+444 -units PixelsPerInch -background ' . $card_color . ' -fill ' . $fill . ' -font ' . $cwd . '/fonts/HelveticaNeueBold.ttf -pointsize 15 -kerning -1 -density 1200 -size 2450x caption:@- -flatten ' . $path . '/temp.png; mv ' . $path . '/temp.png ' . $path . '/' . $batch . '_' . $i . '.png');
+		exec('perl -e \'use utf8; binmode(STDOUT, ":utf8"); print "' . $text . '\n";\' | tee -a ' . $cwd . '/card_log.txt | convert ' . $card_front_path . $card_front . ' -page +444+444 -units PixelsPerInch -background ' . $card_color . ' -fill ' . $fill . ' -font ' . $cwd . '/fonts/HelveticaNeueBold.ttf -pointsize 15 -kerning -1 -density 1200 -size 2450x caption:@- -flatten ' . $path . '/temp.png; mv ' . $path . '/temp.png ' . $path . '/' . $batch . '_' . $i . '.png');
 	}
 
 	exec("cd $path; zip $batch.zip *.png");
