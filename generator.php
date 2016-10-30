@@ -53,6 +53,9 @@ switch ($_POST['icon']) {
 	case "hat":
 		$icon = 'hat-';
 		break;
+	case "emu":
+		$icon = 'emu-';
+		break;
 	case "1":
 		$icon = 'v1-';
 		break;
@@ -64,6 +67,12 @@ switch ($_POST['icon']) {
 		break;
 	case "4":
 		$icon = 'v4-';
+		break;
+	case "5":
+		$icon = 'v5-';
+		break;
+	case "6":
+		$icon = 'v6-';
 		break;
 	case "custom":
 		$icon = 'custom-';
