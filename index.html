@@ -330,7 +330,7 @@
 					dl_button.prop('disabled', true);
 
 					$('#batch-id').attr('value', batch);
-					text.val(_.without(text.val().split('\n'), "").join('\n').replace(/([^_])_([^_])|([^_])_([^_]?)$|^([^_]?)_([^_])/g, '\$1___________________\$2').replace(/"(.+?)"/g, "\\x{201C}\$1\\x{201D}").replace(/'/g, "\\x{2019}"));
+					text.val(_.without(text.val().split('\n'), "").join('\n').replace(/([^_])_([^_])|([^_])_([^_]?)$|^([^_]?)_([^_])/g, '\$1\$3\$5___________________\$2\$4\$6').replace(/"(.+?)"/g, "\\x{201C}\$1\\x{201D}").replace(/'/g, "\\x{2019}"));
 					batch_count = text.val().split('\n').length;
 					
 					// Cards entered are valid
