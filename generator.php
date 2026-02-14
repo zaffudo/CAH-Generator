@@ -9,6 +9,16 @@ if (!isset($_SERVER["HTTP_HOST"])) {
     parse_str($argv[1], $_POST);
 }
 
+// Detect ImageMagick command: prefer 'magick' (v7+), fall back to 'convert' (v6)
+$magick = 'magick';
+exec('which magick 2>/dev/null', $output, $retval);
+if ($retval !== 0) {
+	exec('which convert 2>/dev/null', $output, $retval);
+	if ($retval === 0) {
+		$magick = 'convert';
+	}
+}
+
 $card_color = 'white';
 $fill = 'black';
 $icon = '';
@@ -120,8 +130,8 @@ if ($batch != '' && $card_count < 31) {
 		    $coord = '1722,3495';
 	    }
 
-	    exec('magick ' . $path . '/custom_icon_raw -resize 150x150\! ' . $path . '/custom_icon');
-	    exec('magick ' . $card_front_path . $card_front . ' -units PixelsPerInch -density 1200 -draw "rotate 17 image over ' . $coord . ' 0,0 \'' . $path . '/custom_icon\'" ' . $path . '/' . $icon . $card_front);
+	    exec($magick . ' ' . $path . '/custom_icon_raw -resize 150x150\! ' . $path . '/custom_icon');
+	    exec($magick . ' ' . $card_front_path . $card_front . ' -units PixelsPerInch -density 1200 -draw "rotate 17 image over ' . $coord . ' 0,0 \'' . $path . '/custom_icon\'" ' . $path . '/' . $icon . $card_front);
 	    $card_front_path = $path . '/';
 	}
 
@@ -141,7 +151,7 @@ if ($batch != '' && $card_count < 31) {
 		$text = str_replace ('\\\\x\\{2019\\}', '\\x{2019}', $text);
 		$text = str_replace ('\\\\n', '\\n', $text);
 		
-		exec('perl -e \'use utf8; binmode(STDOUT, ":utf8"); print "' . $text . '\n";\' | tee -a ' . $cwd . '/card_log.txt | magick ' . $card_front_path . $card_front . ' -page +444+444 -units PixelsPerInch -background ' . $card_color . ' -fill ' . $fill . ' -font ' . $cwd . '/fonts/HelveticaNeueBold.ttf -pointsize 15 -kerning -1 -density 1200 -size 2450x caption:@- -flatten ' . $path . '/temp.png; mv ' . $path . '/temp.png ' . $path . '/' . $batch . '_' . $i . '.png');
+		exec('perl -e \'use utf8; binmode(STDOUT, ":utf8"); print "' . $text . '\n";\' | tee -a ' . $cwd . '/card_log.txt | ' . $magick . ' ' . $card_front_path . $card_front . ' -page +444+444 -units PixelsPerInch -background ' . $card_color . ' -fill ' . $fill . ' -font ' . $cwd . '/fonts/HelveticaNeueBold.ttf -pointsize 15 -kerning -1 -density 1200 -size 2450x caption:@- -flatten ' . $path . '/temp.png; mv ' . $path . '/temp.png ' . $path . '/' . $batch . '_' . $i . '.png');
 	}
 
 	exec("cd $path; zip $batch.zip *.png");
