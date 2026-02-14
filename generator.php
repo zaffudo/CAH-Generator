@@ -32,6 +32,7 @@ if ($magick === '') {
 	error_log('ImageMagick not found: checked magick and convert in PATH and common locations');
 	$magick = 'convert'; // last resort fallback
 }
+error_log("ImageMagick command resolved to: $magick");
 
 $card_color = 'white';
 $fill = 'black';
@@ -165,7 +166,12 @@ if ($batch != '' && $card_count < 31) {
 		$text = str_replace ('\\\\x\\{2019\\}', '\\x{2019}', $text);
 		$text = str_replace ('\\\\n', '\\n', $text);
 		
-		exec('perl -e \'use utf8; binmode(STDOUT, ":utf8"); print "' . $text . '\n";\' | tee -a ' . $cwd . '/card_log.txt | ' . $magick . ' ' . $card_front_path . $card_front . ' -page +444+444 -units PixelsPerInch -background ' . $card_color . ' -fill ' . $fill . ' -font ' . $cwd . '/fonts/HelveticaNeueBold.ttf -pointsize 15 -kerning -1 -density 1200 -size 2450x caption:@- -flatten ' . $path . '/temp.png; mv ' . $path . '/temp.png ' . $path . '/' . $batch . '_' . $i . '.png');
+		$im_cmd = 'perl -e \'use utf8; binmode(STDOUT, ":utf8"); print "' . $text . '\n";\' | tee -a ' . $cwd . '/card_log.txt | ' . $magick . ' ' . $card_front_path . $card_front . ' -page +444+444 -units PixelsPerInch -background ' . $card_color . ' -fill ' . $fill . ' -font ' . $cwd . '/fonts/HelveticaNeueBold.ttf -pointsize 15 -kerning -1 -density 1200 -size 2450x caption:@- -flatten ' . $path . '/temp.png; mv ' . $path . '/temp.png ' . $path . '/' . $batch . '_' . $i . '.png';
+		exec($im_cmd . ' 2>&1', $im_output, $im_retval);
+		if ($im_retval !== 0) {
+			error_log("ImageMagick failed (exit $im_retval): " . implode("\n", $im_output));
+			error_log("Command was: $im_cmd");
+		}
 	}
 
 	exec("cd $path; zip $batch.zip *.png");
