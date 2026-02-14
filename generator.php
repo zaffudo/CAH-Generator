@@ -41,6 +41,11 @@ $mechanic = '';
 $card_text = explode("\n", $_POST['card-text']);
 $card_count = count($card_text);
 $batch = escapeshellcmd($_POST['batch-id']);
+if (!preg_match('/^[a-zA-Z0-9_]+$/', $batch)) {
+	http_response_code(400);
+	error_log("Invalid batch ID rejected: $batch");
+	exit('Invalid batch ID');
+}
 $cwd = getcwd();
 $path = "$cwd/files/$batch";
 $coord = '1718,3494';
@@ -131,7 +136,12 @@ $card_front_path = $cwd .'/img/';
 $card_front = "$card_color$mechanic.png";
 
 
-if ($batch != '' && $card_count < 31) {
+if ($batch == '' || $card_count >= 31) {
+	http_response_code(400);
+	exit($batch == '' ? 'Missing batch ID' : 'Too many cards (max 30)');
+}
+
+{
 	if (!is_dir("$cwd/files")) {
 		mkdir("$cwd/files");
 	}
@@ -167,7 +177,7 @@ if ($batch != '' && $card_count < 31) {
 		$text = str_replace ('\\\\n', '\\n', $text);
 		
 		// Log the card text
-		exec('perl -e \'use utf8; binmode(STDOUT, ":utf8"); print "' . $text . '\n";\' | tee -a ' . $cwd . '/card_log.txt > /dev/null');
+		file_put_contents($cwd . '/card_log.txt', $text . "\n", FILE_APPEND);
 
 		// Pass caption text directly as argument (@ syntax blocked by security policy on shared hosting)
 		$im_cmd = $magick . ' ' . $card_front_path . $card_front . ' -page +444+444 -units PixelsPerInch -background ' . $card_color . ' -fill ' . $fill . ' -font ' . $cwd . '/fonts/HelveticaNeueBold.ttf -pointsize 15 -kerning -1 -density 1200 -size 2450x caption:"' . $text . '" -flatten ' . $path . '/' . $batch . '_' . $i . '.png';
