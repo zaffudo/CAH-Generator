@@ -10,13 +10,27 @@ if (!isset($_SERVER["HTTP_HOST"])) {
 }
 
 // Detect ImageMagick command: prefer 'magick' (v7+), fall back to 'convert' (v6)
-$magick = 'magick';
-exec('which magick 2>/dev/null', $output, $retval);
-if ($retval !== 0) {
-	exec('which convert 2>/dev/null', $output, $retval);
-	if ($retval === 0) {
-		$magick = 'convert';
+// Check common paths since PHP's exec environment may have a limited PATH
+$magick = '';
+$search_paths = ['/usr/local/bin', '/usr/bin', '/bin', '/opt/local/bin'];
+foreach (['magick', 'convert'] as $cmd) {
+	// Try which first
+	exec("which $cmd 2>/dev/null", $out, $ret);
+	if ($ret === 0) {
+		$magick = $cmd;
+		break;
 	}
+	// Check common paths directly
+	foreach ($search_paths as $dir) {
+		if (file_exists("$dir/$cmd")) {
+			$magick = "$dir/$cmd";
+			break 2;
+		}
+	}
+}
+if ($magick === '') {
+	error_log('ImageMagick not found: checked magick and convert in PATH and common locations');
+	$magick = 'convert'; // last resort fallback
 }
 
 $card_color = 'white';
