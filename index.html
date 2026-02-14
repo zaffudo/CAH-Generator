@@ -328,16 +328,21 @@
 					dl_button.prop('disabled', true);
 
 					$('#batch-id').attr('value', batch);
-					text.val(_.without(text.val().split('\n'), "").join('\n').replace(/([^_])_([^_])|([^_])_([^_]?)$|^([^_]?)_([^_])/g, '\$1\$3\$5___________________\$2\$4\$6').replace(/"(.+?)"/g, "\\x{201C}\$1\\x{201D}").replace(/'/g, "\\x{2019}"));
-					batch_count = text.val().split('\n').length;
-					
+					var processedText = _.without(text.val().split('\n'), "").join('\n').replace(/([^_])_([^_])|([^_])_([^_]?)$|^([^_]?)_([^_])/g, '\$1\$3\$5___________________\$2\$4\$6').replace(/"(.+?)"/g, "\\x{201C}\$1\\x{201D}").replace(/'/g, "\\x{2019}");
+					batch_count = processedText.split('\n').length;
+
 					// Cards entered are valid
-					if (batch_count < 31 && text.val() !== "") {
+					if (batch_count < 31 && processedText !== "") {
 						button.button('loading');
+						// Temporarily set processed text for FormData, then restore original
+						var originalText = text.val();
+						text.val(processedText);
+						var formData = new FormData(document.forms.generator);
+						text.val(originalText);
 						$.ajax({
 							type: 'POST',
 							url: 'generator.php',
-							data: new FormData(document.forms.generator),
+							data: formData,
 							cache: false,
 							contentType: false,
 							processData: false
@@ -347,9 +352,13 @@
 							});
 
 							dl_button.prop('disabled', false);
-							button.button('reset')
-						
-						}).fail(function(){alert('An Error Occurred, you should refresh the page.')})
+
+						}).fail(function(jqXHR){
+							$('#batchModal').modal('hide');
+							$('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><strong>Error:</strong> Card generation failed. ' + (jqXHR.responseText || 'Please try again.') + '</div>').prependTo(form);
+						}).always(function(){
+							button.button('reset');
+						})
 
 						$('#batchModal').modal('show');
 						view_batch(batch, batch_count);
@@ -364,8 +373,6 @@
 						}
 					}
 					
-					text.val(_.without(text.val().split('\n'), "").join('\n').replace(/\\x{201C}|\\x{201D}/g, '"').replace(/\\x{2019\}/g, "'"));
-
 					e.preventDefault();
 				});
 
