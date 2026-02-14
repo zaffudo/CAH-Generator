@@ -224,10 +224,12 @@ if ($batch == '' || $card_count >= 31) {
 
 		$text = escapeshellcmd($text);
 
-		$text = str_replace ('\\\\x\\{201C\\}', '\\x{201C}', $text);
-		$text = str_replace ('\\\\x\\{201D\\}', '\\x{201D}', $text);
-		$text = str_replace ('\\\\x\\{2019\\}', '\\x{2019}', $text);
-		$text = str_replace ('\\\\n', '\\n', $text);
+		// Convert escaped Unicode sequences to actual UTF-8 characters
+		// (Previously handled by Perl, now done directly in PHP)
+		$text = str_replace ('\\\\x\\{201C\\}', "\xE2\x80\x9C", $text); // left double quote
+		$text = str_replace ('\\\\x\\{201D\\}', "\xE2\x80\x9D", $text); // right double quote
+		$text = str_replace ('\\\\x\\{2019\\}', "\xE2\x80\x99", $text); // right single quote (apostrophe)
+		$text = str_replace ('\\\\n', "\n", $text);
 		
 		// Log the card text
 		file_put_contents($cwd . '/card_log.txt', $text . "\n", FILE_APPEND);
