@@ -34,6 +34,44 @@ if ($magick === '') {
 }
 error_log("ImageMagick command resolved to: $magick");
 
+// Simple rate limiting: max 20 requests per IP per hour
+$rate_limit_dir = getcwd() . '/files/.ratelimit';
+if (!is_dir($rate_limit_dir)) {
+	@mkdir($rate_limit_dir, 0755, true);
+}
+$client_ip = preg_replace('/[^a-zA-Z0-9._\-]/', '_', $_SERVER['REMOTE_ADDR'] ?? 'unknown');
+$rate_file = "$rate_limit_dir/$client_ip";
+$rate_limit = 20;
+$rate_window = 3600; // 1 hour
+$now = time();
+
+if (file_exists($rate_file)) {
+	$requests = array_filter(
+		explode("\n", trim(file_get_contents($rate_file))),
+		function($ts) use ($now, $rate_window) { return ($now - (int)$ts) < $rate_window; }
+	);
+	if (count($requests) >= $rate_limit) {
+		http_response_code(429);
+		exit('Rate limit exceeded. Please try again later.');
+	}
+	$requests[] = $now;
+	file_put_contents($rate_file, implode("\n", $requests));
+} else {
+	file_put_contents($rate_file, $now);
+}
+
+// Cleanup generated batches older than 2 weeks
+$cleanup_dir = getcwd() . '/files';
+if (is_dir($cleanup_dir)) {
+	$two_weeks_ago = time() - (14 * 24 * 60 * 60);
+	foreach (glob("$cleanup_dir/submit_*") as $dir) {
+		if (is_dir($dir) && filemtime($dir) < $two_weeks_ago) {
+			array_map('unlink', glob("$dir/*"));
+			rmdir($dir);
+		}
+	}
+}
+
 $card_color = 'white';
 $fill = 'black';
 $icon = '';
@@ -147,7 +185,12 @@ if ($batch == '' || $card_count >= 31) {
 	}
 	mkdir($path);
 	
-	if ($icon == 'custom-' && getimagesize($_FILES["customIcon"]["tmp_name"]) && move_uploaded_file($_FILES["customIcon"]["tmp_name"], $path . '/custom_icon_raw')) {
+	if ($icon == 'custom-' && isset($_FILES["customIcon"]) && $_FILES["customIcon"]["size"] > 1048576) {
+		http_response_code(400);
+		exit('Custom icon too large (max 1MB)');
+	}
+
+	if ($icon == 'custom-' && isset($_FILES["customIcon"]) && getimagesize($_FILES["customIcon"]["tmp_name"]) && move_uploaded_file($_FILES["customIcon"]["tmp_name"], $path . '/custom_icon_raw')) {
 
 	    // The White and Black cards aren't pixel perfect - the 'three card logo' in the bottom left corner is in a slightly different spot on each 
 	    // Thus to get the custom icon to line up as best as possible, we need a slightly different set of coordinates
@@ -155,8 +198,18 @@ if ($batch == '' || $card_count >= 31) {
 		    $coord = '1722,3495';
 	    }
 
-	    exec($magick . ' ' . $path . '/custom_icon_raw -resize 150x150\! ' . $path . '/custom_icon');
-	    exec($magick . ' ' . $card_front_path . $card_front . ' -units PixelsPerInch -density 1200 -draw "rotate 17 image over ' . $coord . ' 0,0 \'' . $path . '/custom_icon\'" ' . $path . '/' . $icon . $card_front);
+	    $resize_cmd = $magick . ' ' . $path . '/custom_icon_raw -resize 150x150\! ' . $path . '/custom_icon';
+	    exec($resize_cmd . ' 2>&1', $resize_output, $resize_retval);
+	    if ($resize_retval !== 0) {
+		    error_log("Custom icon resize failed (exit $resize_retval): " . implode("\n", $resize_output));
+	    }
+
+	    $overlay_cmd = $magick . ' ' . $card_front_path . $card_front . ' -units PixelsPerInch -density 1200 -draw "rotate 17 image over ' . $coord . ' 0,0 \'' . $path . '/custom_icon\'" ' . $path . '/' . $icon . $card_front;
+	    exec($overlay_cmd . ' 2>&1', $overlay_output, $overlay_retval);
+	    if ($overlay_retval !== 0) {
+		    error_log("Custom icon overlay failed (exit $overlay_retval): " . implode("\n", $overlay_output));
+	    }
+
 	    $card_front_path = $path . '/';
 	}
 
@@ -188,7 +241,12 @@ if ($batch == '' || $card_count >= 31) {
 		}
 	}
 
-	exec("cd $path; zip $batch.zip *.png");
+	exec("cd $path; zip $batch.zip *.png 2>&1", $zip_output, $zip_retval);
+	if ($zip_retval !== 0) {
+		error_log("ZIP creation failed (exit $zip_retval): " . implode("\n", $zip_output));
+		http_response_code(500);
+		exit('Failed to create ZIP archive');
+	}
 }
 
 ?>
