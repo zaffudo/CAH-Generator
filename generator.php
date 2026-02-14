@@ -79,7 +79,7 @@ switch ($_POST['icon']) {
 		break;
 }
 
-switch ($_POST['mechanic']) {
+switch ($_POST['mechanic'] ?? '') {
 	case "p2":
 		$mechanic = '-mechanic-p2';
 		break;
@@ -107,6 +107,9 @@ $card_front = "$card_color$mechanic.png";
 
 
 if ($batch != '' && $card_count < 31) {
+	if (!is_dir("$cwd/files")) {
+		mkdir("$cwd/files");
+	}
 	mkdir($path);
 	
 	if ($icon == 'custom-' && getimagesize($_FILES["customIcon"]["tmp_name"]) && move_uploaded_file($_FILES["customIcon"]["tmp_name"], $path . '/custom_icon_raw')) {
