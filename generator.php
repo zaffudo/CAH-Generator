@@ -32,8 +32,6 @@ if ($magick === '') {
 	error_log('ImageMagick not found: checked magick and convert in PATH and common locations');
 	$magick = 'convert'; // last resort fallback
 }
-error_log("ImageMagick command resolved to: $magick");
-
 // Simple rate limiting: max 20 requests per IP per hour
 $rate_limit_dir = getcwd() . '/files/.ratelimit';
 if (!is_dir($rate_limit_dir)) {
