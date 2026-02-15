@@ -1,11 +1,8 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<html lang="en">
     <head>
         <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
         <title>Cards Against Humanity - Card Generator</title>
         <meta name="description" content="Generate your own, full size, Cards Against Humanity cards.">
         <meta name="viewport" content="width=device-width">
@@ -84,14 +81,8 @@
         </style>
         <link rel="stylesheet" href="css/bootstrap-theme.min.css">
         <!-- <link rel="stylesheet" href="css/main.css"> -->
-
-        <script src="js/vendor/modernizr-2.6.2.min.js"></script>
     </head>
     <body>
-        <!--[if lt IE 7]>
-            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
-        <![endif]-->
-
 
     <div class="container">
       <div class="row">
@@ -287,8 +278,6 @@
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
 
         <script src="js/vendor/bootstrap.min.js"></script>
-
-        <script src="js/vendor/underscore-min.js"></script>
         <script src="js/plugins.js"></script>
         <!-- <script src="js/main.js"></script> -->
 
@@ -331,7 +320,7 @@
 					dl_button.prop('disabled', true);
 
 					$('#batch-id').attr('value', batch);
-					var processedText = _.without(text.val().split('\n'), "").join('\n').replace(/([^_])_([^_])|([^_])_([^_]?)$|^([^_]?)_([^_])/g, '\$1\$3\$5___________________\$2\$4\$6').replace(/"(.+?)"/g, "\\x{201C}\$1\\x{201D}").replace(/'/g, "\\x{2019}");
+					var processedText = text.val().split('\n').filter(function(line){ return line !== ""; }).join('\n').replace(/([^_])_([^_])|([^_])_([^_]?)$|^([^_]?)_([^_])/g, '\$1\$3\$5___________________\$2\$4\$6').replace(/"(.+?)"/g, "\\x{201C}\$1\\x{201D}").replace(/'/g, "\\x{2019}");
 					batch_count = processedText.split('\n').length;
 
 					// Cards entered are valid
