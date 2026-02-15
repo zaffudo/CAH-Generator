@@ -161,6 +161,7 @@
 				</div>
 				<div class="col-lg-4">
 					<label>Mechanic</label>
+					<p id="mechanic-hint" class="help-block" style="font-size: 11px; margin: 0;">Black cards only</p>
 						<div class="radio">
 							<label>
 								<input type="radio" name="mechanic" id="mechanic-none" value="none" checked disabled>
@@ -295,11 +296,6 @@
         <script src="js/main.js"></script>
 
         <script>
-            var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
-            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-            g.src='//www.google-analytics.com/ga.js';
-            s.parentNode.insertBefore(g,s)}(document,'script'));
-
 			$( document ).ready(function() {
 				$('input:radio[name=card-color]').change(function(e){
 					if($(this).val() === 'black') {
@@ -314,6 +310,13 @@
 						$('#customIconLabel').css('visibility', 'visible');
 					} else {
 						$('#customIconLabel').css('visibility', 'hidden');
+					}
+				});
+
+				$('#customIcon').change(function(){
+					var filename = $(this).val().split('\\').pop();
+					if (filename) {
+						$('#customIconLabel').contents().last().replaceWith(' ' + filename);
 					}
 				});
 
@@ -416,6 +419,8 @@
 							attempt++;
 							if (attempt < max_attempts) {
 							    setTimeout(function(){loadImages(attempt)}, 5000);
+							} else {
+							    $(col).html('<p style="color:red; font-size:12px;">Failed to load card</p>');
 							}
 						});
 					}
